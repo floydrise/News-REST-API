@@ -141,3 +141,57 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  it("should return status 201 and the new comment", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "butter_bridge",
+        body: "The most amazing comment ever",
+      })
+      .expect(201)
+      .then(({ body: { newComment } }) => {
+        expect(newComment).toMatchObject({
+          author: "butter_bridge",
+          body: "The most amazing comment ever",
+        });
+      });
+  });
+  it("should respond with status 400 bad request if username does not exist", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "coolDude42",
+        body: "The most amazing comment ever",
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should respond with 400 bad request if article_id is not a number", () => {
+    return request(app)
+      .post("/api/articles/waffle/comments")
+      .send({
+        username: "butter_bridge",
+        body: "The most amazing comment ever",
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should respond with 400 bad request if article_id is a number but not present in the database", () => {
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send({
+        username: "butter_bridge",
+        body: "The most amazing comment ever",
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+});

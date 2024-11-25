@@ -61,9 +61,19 @@ const fetchComments = async (article_id) => {
   return rows;
 };
 
+const uploadNewComment = async (article_id, newComment) => {
+    const commentValues = Object.values(newComment);
+    commentValues.push(article_id);
+    const {rows} = await db.query(`insert into comments (author, body, article_id)
+                                 values ($1, $2, $3)
+                                 returning *`, commentValues);
+    return rows[0];
+};
+
 module.exports = {
   fetchAllTopics,
   fetchArticleByID,
   fetchArticles,
   fetchComments,
+  uploadNewComment,
 };

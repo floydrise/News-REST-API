@@ -4,6 +4,7 @@ const {
   fetchArticleByID,
   fetchArticles,
   fetchComments,
+  uploadNewComment,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -48,10 +49,23 @@ const getCommentsByArticleID = async (req, res, next) => {
   }
 };
 
+const postComment = async (req, res, next) => {
+  try {
+    const comment = req.body;
+    const { article_id } = req.params;
+    const newComment = await uploadNewComment(article_id, comment);
+    console.log(newComment);
+    res.status(201).send({ newComment });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getApi,
   getTopics,
   getArticleByID,
   getAllArticles,
   getCommentsByArticleID,
+  postComment,
 };
