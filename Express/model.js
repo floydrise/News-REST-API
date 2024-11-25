@@ -36,7 +36,33 @@ const fetchArticles = async () => {
                                             comments.article_id = articles.article_id
                                    GROUP BY articles.article_id
                                    ORDER BY articles.created_at DESC;
-  `);
+    `);
   return rows;
 };
-module.exports = { fetchAllTopics, fetchArticleByID, fetchArticles };
+
+const fetchComments = async (article_id) => {
+  const { rows } = await db.query(
+    `select comments.comment_id,
+                comments.votes,
+                comments.created_at,
+                comments.author,
+                comments.body,
+                comments.article_id
+         from comments
+                  join articles on articles.article_id = comments.article_id
+         where articles.article_id = $1
+         group by comment_id`,
+    [article_id],
+  );
+  if (rows.length === 0) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  return rows;
+};
+
+module.exports = {
+  fetchAllTopics,
+  fetchArticleByID,
+  fetchArticles,
+  fetchComments,
+};

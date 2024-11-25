@@ -1,5 +1,10 @@
 const endpointsJSON = require("../endpoints.json");
-const { fetchAllTopics, fetchArticleByID, fetchArticles } = require("./model");
+const {
+  fetchAllTopics,
+  fetchArticleByID,
+  fetchArticles,
+  fetchComments,
+} = require("./model");
 
 const getApi = (req, res, next) => {
   res.status(200).send({ endpoints: endpointsJSON });
@@ -25,7 +30,29 @@ const getArticleByID = async (req, res, next) => {
 };
 
 const getAllArticles = async (req, res, next) => {
-  const articles = await fetchArticles();
-  res.status(200).send({ articles });
+  try {
+    const articles = await fetchArticles();
+    res.status(200).send({ articles });
+  } catch (err) {
+    next(err);
+  }
 };
-module.exports = { getApi, getTopics, getArticleByID, getAllArticles };
+
+const getCommentsByArticleID = async (req, res, next) => {
+  const { article_id } = req.params;
+  try {
+    const comments = await fetchComments(article_id);
+    res.status(200).send({ comments });
+  } catch (err) {
+    console.log(err)
+    next(err);
+  }
+};
+
+module.exports = {
+  getApi,
+  getTopics,
+  getArticleByID,
+  getAllArticles,
+  getCommentsByArticleID,
+};
