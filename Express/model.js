@@ -51,7 +51,8 @@ const fetchComments = async (article_id) => {
          from comments
                   join articles on articles.article_id = comments.article_id
          where articles.article_id = $1
-         group by comment_id`,
+         group by comment_id
+         order by comments.created_at asc`,
     [article_id],
   );
   if (rows.length === 0) {
