@@ -30,6 +30,7 @@
     "jest-extended": "^2.0.0",
     "pg": "^8.13.1",
     "pg-format": "^1.0.4",
+    "prettier": "3.3.3",
     "supertest": "^7.0.0"
   },
   "dependencies": {
