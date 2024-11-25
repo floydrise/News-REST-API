@@ -11,16 +11,31 @@ beforeEach(() => {
 })
 
 afterAll(() => {
-   return db.end();
+    return db.end();
 })
 
 describe("GET /api", () => {
-  test("200: Responds with an object detailing the documentation for each endpoint", () => {
-    return request(app)
-      .get("/api")
-      .expect(200)
-      .then(({ body: { endpoints } }) => {
-        expect(endpoints).toEqual(endpointsJson);
-      });
-  });
+    test("200: Responds with an object detailing the documentation for each endpoint", () => {
+        return request(app)
+            .get("/api")
+            .expect(200)
+            .then(({body: {endpoints}}) => {
+                expect(endpoints).toEqual(endpointsJson);
+            });
+    });
+});
+
+describe('GET /api/topics', () => {
+    it('should respond with status 200 and an array of topic objects', () => {
+        return request(app).get("/api/topics").expect(200).then(({body: {topics}}) => {
+            topics.forEach((topic) => {
+                expect(topic).toHaveProperty("slug")
+                expect(topic).toHaveProperty("description");
+                expect(topic).toMatchObject({
+                    description: expect.any(String),
+                    slug: expect.any(String),
+                })
+            })
+        })
+    });
 });
