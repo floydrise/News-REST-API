@@ -29,14 +29,14 @@ const fetchArticles = async () => {
                                           articles.votes,
                                           articles.article_img_url,
                                           COUNT(comments.article_id)::INT AS comment_count
-                                   FROM articles
+                                   FROM articles /*^casting as I was getting article_id in string format^*/
                                             LEFT JOIN
                                         comments
                                         ON
                                             comments.article_id = articles.article_id
                                    GROUP BY articles.article_id
                                    ORDER BY articles.created_at DESC;
-    `);
+  `);
   return rows;
 };
 module.exports = { fetchAllTopics, fetchArticleByID, fetchArticles };

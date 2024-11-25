@@ -80,7 +80,7 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("GET /api/articles", () => {
-  it.only("should return status 200 and an array of all articles", () => {
+  it("should return status 200 and an array of all articles sorted by 'created_at' property in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -96,7 +96,9 @@ describe("GET /api/articles", () => {
             article_img_url: expect.any(String),
             comment_count: expect.any(Number),
           });
+          expect(article).not.toHaveProperty("body");
         });
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
 });
