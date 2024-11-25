@@ -44,7 +44,6 @@ const getCommentsByArticleID = async (req, res, next) => {
     const comments = await fetchComments(article_id);
     res.status(200).send({ comments });
   } catch (err) {
-    console.log(err)
     next(err);
   }
 };
