@@ -1,6 +1,6 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+In order for this program to run, should you fork it, two .env files should be created locally - .env.nc_news and .env.nc_news_test
 
 
 
