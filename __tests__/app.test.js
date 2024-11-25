@@ -105,7 +105,7 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
-  it("should return status 200 and all comments associated with the article passed as a parameter", () => {
+  it.only("should return status 200 and all comments associated with the article passed as a parameter", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
