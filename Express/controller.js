@@ -5,6 +5,7 @@ const {
   fetchArticles,
   fetchComments,
   uploadNewComment,
+  updateComment,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -61,6 +62,10 @@ const postComment = async (req, res, next) => {
   }
 };
 
+const patchComment = async (req, res, next) => {
+  const updatedComment = await updateComment();
+};
+
 module.exports = {
   getApi,
   getTopics,
@@ -68,4 +73,5 @@ module.exports = {
   getAllArticles,
   getCommentsByArticleID,
   postComment,
+  patchComment,
 };
