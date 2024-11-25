@@ -85,6 +85,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(1);
         articles.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
@@ -99,6 +100,43 @@ describe("GET /api/articles", () => {
           expect(article).not.toHaveProperty("body");
         });
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  it("should return status 200 and all comments associated with the article passed as a parameter", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBeGreaterThanOrEqual(1);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            article_id: 1,
+            created_at: expect.any(String),
+          });
+        });
+      });
+  });
+  it("should return 400 with message Bad request if article_id is not a number", () => {
+    return request(app)
+      .get("/api/articles/dog/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should return 400 with message Bad request if article_id is a number but is not present in the database", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
       });
   });
 });
