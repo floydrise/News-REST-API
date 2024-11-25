@@ -4,6 +4,9 @@ const {getApi, getTopics} = require("./controller");
 
 app.get("/api", getApi);
 app.get("/api/topics", getTopics)
+app.all("*", (req, res) => {
+    res.status(404).send({msg: "Not found"});
+})
 
 app.use((err, req, res, next) => {
     if (err.status === 404) {
