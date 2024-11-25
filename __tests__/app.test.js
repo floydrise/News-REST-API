@@ -167,7 +167,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request");
+        expect(msg).toBe("Key is not present in table");
       });
   });
   it("should respond with 400 bad request if article_id is not a number", () => {
@@ -184,14 +184,14 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
   it("should respond with 400 bad request if article_id is a number but not present in the database", () => {
     return request(app)
-      .post("/api/articles/9999/comments")
+      .post("/api/articles/0/comments")
       .send({
         username: "butter_bridge",
         body: "The most amazing comment ever",
       })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request");
+        expect(msg).toBe("Key is not present in table");
       });
   });
 });
