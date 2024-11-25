@@ -28,6 +28,7 @@
     "husky": "^8.0.2",
     "jest": "^27.5.1",
     "jest-extended": "^2.0.0",
+    "jest-sorted": "^1.0.15",
     "pg": "^8.13.1",
     "pg-format": "^1.0.4",
     "prettier": "3.3.3",
@@ -38,7 +39,8 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "jest-extended/all"
+      "jest-extended/all",
+      "jest-sorted"
     ]
   }
 }
