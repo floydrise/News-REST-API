@@ -1,5 +1,5 @@
 const endpointsJSON = require("../endpoints.json");
-const { fetchAllTopics, fetchArticleByID } = require("./model");
+const { fetchAllTopics, fetchArticleByID, fetchArticles } = require("./model");
 
 const getApi = (req, res, next) => {
   res.status(200).send({ endpoints: endpointsJSON });
@@ -18,9 +18,14 @@ const getArticleByID = async (req, res, next) => {
   const { article_id } = req.params;
   try {
     const article = await fetchArticleByID(article_id);
-    res.status(200).send({article});
+    res.status(200).send({ article });
   } catch (err) {
     next(err);
   }
 };
-module.exports = { getApi, getTopics, getArticleByID };
+
+const getAllArticles = async (req, res, next) => {
+  const articles = await fetchArticles();
+  res.status(200).send({ articles });
+};
+module.exports = { getApi, getTopics, getArticleByID, getAllArticles };

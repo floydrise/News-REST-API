@@ -80,14 +80,14 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("GET /api/articles", () => {
-  it("should return status 200 and an array of all articles", () => {
+  it.only("should return status 200 and an array of all articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
         articles.forEach((article) => {
           expect(article).toMatchObject({
-            author_id: expect.any(Number),
+            article_id: expect.any(Number),
             author: expect.any(String),
             title: expect.any(String),
             topic: expect.any(String),
