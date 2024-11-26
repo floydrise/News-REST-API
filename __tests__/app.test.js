@@ -292,7 +292,7 @@ describe("DELETE /api/comments/:comment_id", () => {
 });
 
 describe("GET /api/users", () => {
-  it.only("should return an array of users with properties if there are users", () => {
+  it("should return an array of users with properties if there are users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -308,6 +308,121 @@ describe("GET /api/users", () => {
         } else {
           expect(users.msg).toBe("No users yet");
         }
+      });
+  });
+});
+
+describe("GET /api/articles?sort_by=...&order=...", () => {
+  it("should get all articles sorted by title", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  it("should get all articles sorted by topic", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("topic", { descending: true });
+      });
+  });
+  it("should get all articles sorted by author", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  it("should get all articles sorted by created_at", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  it("should get all articles sorted by votes", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  it("should get all articles sorted by article_img_url", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_img_url")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_img_url", { descending: true });
+      });
+  });
+  it("should get all articles in asc order", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted({ descending: false });
+      });
+  });
+  it("should get all articles sorted by title in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", { descending: false });
+      });
+  });
+  it("400 bad request if attempt to sort by body", () => {
+    return request(app)
+      .get("/api/articles?sort_by=body")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("400 bad request if attempt to sort by a property that is not allowed", () => {
+    return request(app)
+      .get("/api/articles?sort_by=potatoes")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("400 bad request if attempt to order with a parameter that is not allowed", () => {
+    return request(app)
+      .get("/api/articles?order=kennedy")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("400 bad request if both order and sort parameters are not allowed", () => {
+    return request(app)
+      .get("/api/articles?order=kennedy&sort_by=duck")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("400 bad request if sort_by is allowed but order isn't", () => {
+    return request(app)
+      .get("/api/articles?order=kennedy&sort_by=title")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("400 bad request if order allowed but sort_by isn't", () => {
+    return request(app)
+      .get("/api/articles?order=asc&sort_by=oranges")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
       });
   });
 });

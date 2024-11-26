@@ -110,5 +110,27 @@
         "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
       }
     ]
+  },
+  "GET /api/articles?sort_by=...": {
+    "description": "Allows sorting query for the get article endpoint",
+    "allowed sorts": [
+      "article_id",
+      "title",
+      "topic",
+      "author",
+      "body",
+      "created_at",
+      "votes",
+      "article_img_url"
+    ],
+    "response": "array with articles sorted by the passed parameter"
+  },
+  "GET /api/articles?order=...": {
+    "description": "Allows order query for the get article endpoint",
+    "allowed orders": [
+      "asc",
+      "desc"
+    ],
+    "response": "array with articles ordered by the passed parameter"
   }
 }
