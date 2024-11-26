@@ -20,23 +20,50 @@ const fetchArticleByID = async (article_id) => {
   return rows[0];
 };
 
-const fetchArticles = async () => {
-  const { rows } = await db.query(`SELECT articles.article_id,
-                                          articles.author,
-                                          articles.title,
-                                          articles.topic,
-                                          articles.created_at,
-                                          articles.votes,
-                                          articles.article_img_url,
-                                          COUNT(comments.article_id)::INT AS comment_count
-                                   FROM articles /*^casting as I was getting article_id in string format^*/
-                                            LEFT JOIN
-                                        comments
-                                        ON
-                                            comments.article_id = articles.article_id
-                                   GROUP BY articles.article_id
-                                   ORDER BY articles.created_at DESC;
-    `);
+const fetchArticles = async (sort_by, order) => {
+  const allowedSorts = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url",
+  ];
+  const allowedOrders = ["asc", "desc"];
+  let query = `SELECT articles.article_id,
+                        articles.author,
+                        articles.title,
+                        articles.topic,
+                        articles.created_at,
+                        articles.votes,
+                        articles.article_img_url,
+                        COUNT(comments.article_id)::INT AS comment_count
+                 FROM articles /*^casting as I was getting article_id in string format^*/
+                          LEFT JOIN
+                      comments
+                      ON
+                          comments.article_id = articles.article_id
+                 GROUP BY articles.article_id
+    `;
+  if (!sort_by && !order) {
+    query += ` order by created_at desc`;
+  } else if (
+    order &&
+    sort_by &&
+    allowedSorts.includes(sort_by) &&
+    allowedOrders.includes(order)
+  ) {
+    query += ` order by ${sort_by} ${order}`;
+  } else if (sort_by && allowedSorts.includes(sort_by)) {
+    query += ` order by ${sort_by} desc`;
+  } else if (order && allowedOrders.includes(order)) {
+    query += ` order by created_at ${order}`;
+  } else {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  const { rows } = await db.query(query);
   return rows;
 };
 
@@ -106,9 +133,10 @@ const fetchCommentByID = async (comment_id) => {
 };
 
 const fetchAllUsers = async () => {
-    const {rows} = await db.query(`select * from users`);
-    if (rows.length === 0) return { msg: "No users yet" };
-    return rows;
+  const { rows } = await db.query(`select *
+                                   from users`);
+  if (rows.length === 0) return { msg: "No users yet" };
+  return rows;
 };
 
 module.exports = {
