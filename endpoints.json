@@ -132,5 +132,9 @@
       "desc"
     ],
     "response": "array with articles ordered by the passed parameter"
+  },
+  "GET /api/articles (topic query)": {
+    "description": "allows for a topic query",
+    "response": "Array with articles of the passed topic"
   }
 }
