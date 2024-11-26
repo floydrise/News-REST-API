@@ -152,16 +152,15 @@ describe("POST /api/articles/:article_id/comments", () => {
       })
       .expect(201)
       .then(({ body: { newComment } }) => {
-          console.log(newComment);
-        expect(newComment).toMatchObject(    {
-                comment_id: expect.any(Number),
-                body: 'The most amazing comment ever',
-                article_id: 1,
-                author: 'butter_bridge',
-                votes: 0,
-                created_at: expect.any(String)
-            }
-        );
+        console.log(newComment);
+        expect(newComment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "The most amazing comment ever",
+          article_id: 1,
+          author: "butter_bridge",
+          votes: 0,
+          created_at: expect.any(String),
+        });
       });
   });
   it("should respond with status 404 bad request if username does not exist", () => {
@@ -198,6 +197,27 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Not found");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  it("should update an article by article_id", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 3 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 103,
+          article_img_url: expect.any(String),
+        });
       });
   });
 });

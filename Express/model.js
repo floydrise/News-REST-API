@@ -73,7 +73,10 @@ const uploadNewComment = async (article_id, newComment) => {
   return rows[0];
 };
 
-const updateComment = async () => {};
+const updateArticle = async (article_id, inc_votes) => {
+    const {rows} = await db.query(`update articles set votes = votes + $1 where article_id = $2 returning *`, [inc_votes, article_id]);
+    return rows[0];
+};
 
 module.exports = {
   fetchAllTopics,
@@ -81,5 +84,5 @@ module.exports = {
   fetchArticles,
   fetchComments,
   uploadNewComment,
-  updateComment,
+  updateArticle,
 };

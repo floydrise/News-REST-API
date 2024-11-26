@@ -5,7 +5,7 @@ const {
   fetchArticles,
   fetchComments,
   uploadNewComment,
-  updateComment,
+  updateArticle,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -57,18 +57,28 @@ const postComment = async (req, res, next) => {
   try {
     const comment = req.body;
     const { article_id } = req.params;
-    const [_, newComment] = await Promise.all(
-[fetchArticleByID(article_id),
-  uploadNewComment(article_id, comment),]
-    );
+    const [_, newComment] = await Promise.all([
+      fetchArticleByID(article_id),
+      uploadNewComment(article_id, comment),
+    ]);
     res.status(201).send({ newComment });
   } catch (err) {
     next(err);
   }
 };
 
-const patchComment = async (req, res, next) => {
-  const updatedComment = await updateComment();
+const patchArticle = async (req, res, next) => {
+  try {
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+    const [_, article] = await Promise.all([
+      fetchArticleByID(article_id),
+      updateArticle(article_id, inc_votes),
+    ]);
+    res.status(200).send({ article });
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports = {
@@ -78,5 +88,5 @@ module.exports = {
   getAllArticles,
   getCommentsByArticleID,
   postComment,
-  patchComment,
+  patchArticle,
 };
