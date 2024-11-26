@@ -40,7 +40,6 @@ const getAllArticles = async (req, res, next) => {
     const articles = await fetchArticles(sort_by, order);
     res.status(200).send({ articles });
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };

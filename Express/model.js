@@ -56,9 +56,9 @@ const fetchArticles = async (sort_by, order) => {
     allowedOrders.includes(order)
   ) {
     query += ` order by ${sort_by} ${order}`;
-  } else if (sort_by && allowedSorts.includes(sort_by)) {
+  } else if (sort_by && allowedSorts.includes(sort_by) && order === undefined) {
     query += ` order by ${sort_by} desc`;
-  } else if (order && allowedOrders.includes(order)) {
+  } else if (order && allowedOrders.includes(order) && sort_by === undefined) {
     query += ` order by created_at ${order}`;
   } else {
     return Promise.reject({ status: 400, msg: "Bad request" });
