@@ -292,7 +292,7 @@ describe("DELETE /api/comments/:comment_id", () => {
 });
 
 describe("GET /api/users", () => {
-  it("should return an array of users with properties if there are users", () => {
+  it("should return an array of users with properties if there are users, else return a message", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -441,6 +441,19 @@ describe("GET /api/articles (topic query)", () => {
   it('should return 404 and a message if the topic doesn\'t exist', () => {
     return request(app).get("/api/articles?topic=manjaro").expect(404).then(({body: {msg}}) => {
       expect(msg).toBe("Oops, does not exist yet")
+    })
+  });
+});
+
+describe('GET /api/articles/:article_id (comment_count)', () => {
+  it('should return article with comment count if query is set to true', () => {
+    return request(app).get("/api/articles/1?comment_count=true").expect(200).then(({body: {article}}) => {
+      expect(article).toHaveProperty("comment_count")
+    })
+  });
+  it('should return 400 Bad request if query is present but not allowed', () => {
+    return request(app).get("/api/articles/1?comment_count=roses").expect(400).then(({body: {msg}}) => {
+      expect(msg).toBe("Bad request")
     })
   });
 });
