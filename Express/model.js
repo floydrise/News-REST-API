@@ -20,7 +20,7 @@ const fetchArticleByID = async (article_id) => {
   return rows[0];
 };
 
-const fetchArticles = async (sort_by, order) => {
+const fetchArticles = async (sort_by, order, topic) => {
   const allowedSorts = [
     "article_id",
     "title",
@@ -40,13 +40,18 @@ const fetchArticles = async (sort_by, order) => {
                         articles.votes,
                         articles.article_img_url,
                         COUNT(comments.article_id)::INT AS comment_count
-                 FROM articles /*^casting as I was getting article_id in string format^*/
-                          LEFT JOIN
-                      comments
-                      ON
-                          comments.article_id = articles.article_id
-                 GROUP BY articles.article_id
+                 FROM articles
+                          LEFT JOIN comments
+                                    ON comments.article_id = articles.article_id
     `;
+  const topicArr = [];
+  if (topic !== undefined) {
+    query += ` where articles.topic=$1`;
+    topicArr.push(topic);
+  }
+
+  query += ` group by articles.article_id`;
+
   if (!sort_by && !order) {
     query += ` order by created_at desc`;
   } else if (
@@ -63,7 +68,10 @@ const fetchArticles = async (sort_by, order) => {
   } else {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
-  const { rows } = await db.query(query);
+  const { rows } = await db.query(query, topicArr);
+  if (rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Oops, does not exist yet" });
+  }
   return rows;
 };
 
