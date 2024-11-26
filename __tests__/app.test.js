@@ -426,3 +426,21 @@ describe("GET /api/articles?sort_by=...&order=...", () => {
       });
   });
 });
+
+describe("GET /api/articles (topic query)", () => {
+  it("should respond with an array of articles of type the specialised topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  it('should return 404 and a message if the topic doesn\'t exist', () => {
+    return request(app).get("/api/articles?topic=manjaro").expect(404).then(({body: {msg}}) => {
+      expect(msg).toBe("Oops, does not exist yet")
+    })
+  });
+});
