@@ -136,5 +136,10 @@
   "GET /api/articles (topic query)": {
     "description": "allows for a topic query",
     "response": "Array with articles of the passed topic"
+  },
+  "GET /api/articles/:article_id?comment_count": {
+    "description": "Allows for a comment_count query.",
+    "allowed queries": ["true"],
+    "response": "If set to true, it will return articles with an added property of comment_count with a total of all the comments associated with the article"
   }
 }
