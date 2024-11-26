@@ -57,7 +57,10 @@ const postComment = async (req, res, next) => {
   try {
     const comment = req.body;
     const { article_id } = req.params;
-    const newComment = await uploadNewComment(article_id, comment);
+    const [_, newComment] = await Promise.all(
+[fetchArticleByID(article_id),
+  uploadNewComment(article_id, comment),]
+    );
     res.status(201).send({ newComment });
   } catch (err) {
     next(err);

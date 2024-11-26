@@ -152,20 +152,26 @@ describe("POST /api/articles/:article_id/comments", () => {
       })
       .expect(201)
       .then(({ body: { newComment } }) => {
-        expect(newComment).toMatchObject({
-          author: "butter_bridge",
-          body: "The most amazing comment ever",
-        });
+          console.log(newComment);
+        expect(newComment).toMatchObject(    {
+                comment_id: expect.any(Number),
+                body: 'The most amazing comment ever',
+                article_id: 1,
+                author: 'butter_bridge',
+                votes: 0,
+                created_at: expect.any(String)
+            }
+        );
       });
   });
-  it("should respond with status 400 bad request if username does not exist", () => {
+  it("should respond with status 404 bad request if username does not exist", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send({
         username: "coolDude42",
         body: "The most amazing comment ever",
       })
-      .expect(400)
+      .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Key is not present in table");
       });
@@ -182,16 +188,16 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Bad request");
       });
   });
-  it("should respond with 400 bad request if article_id is a number but not present in the database", () => {
+  it("should respond with 404 bad request if article_id is a number but not present in the database", () => {
     return request(app)
       .post("/api/articles/0/comments")
       .send({
         username: "butter_bridge",
         body: "The most amazing comment ever",
       })
-      .expect(400)
+      .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Key is not present in table");
+        expect(msg).toBe("Not found");
       });
   });
 });
