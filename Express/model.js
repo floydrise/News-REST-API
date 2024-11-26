@@ -62,11 +62,19 @@ const fetchComments = async (article_id) => {
 };
 
 const uploadNewComment = async (article_id, newComment) => {
-    const commentValues = Object.values(newComment);
-    commentValues.push(article_id);
-    const {rows} = await db.query(`insert into comments (author, body, article_id)
-                                 values ($1, $2, $3)
-                                 returning *`, commentValues);
+  const commentValues = Object.values(newComment);
+  commentValues.push(article_id);
+  const { rows } = await db.query(
+    `insert into comments (author, body, article_id)
+                                   values ($1, $2, $3)
+                                   returning *`,
+    commentValues,
+  );
+  return rows[0];
+};
+
+const updateArticle = async (article_id, inc_votes) => {
+    const {rows} = await db.query(`update articles set votes = votes + $1 where article_id = $2 returning *`, [inc_votes, article_id]);
     return rows[0];
 };
 
@@ -76,4 +84,5 @@ module.exports = {
   fetchArticles,
   fetchComments,
   uploadNewComment,
+  updateArticle,
 };

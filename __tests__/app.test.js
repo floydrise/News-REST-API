@@ -105,7 +105,7 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
-  it.only("should return status 200 and all comments associated with the article passed as a parameter", () => {
+  it("should return status 200 and all comments associated with the article passed as a parameter", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -132,12 +132,12 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Bad request");
       });
   });
-  it("should return 400 with message Bad request if article_id is a number but is not present in the database", () => {
+  it("should return 404 with message Bad request if article_id is a number but is not present in the database", () => {
     return request(app)
       .get("/api/articles/9999/comments")
-      .expect(400)
+      .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request");
+        expect(msg).toBe("Not found");
       });
   });
 });
@@ -153,19 +153,23 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(201)
       .then(({ body: { newComment } }) => {
         expect(newComment).toMatchObject({
-          author: "butter_bridge",
+          comment_id: expect.any(Number),
           body: "The most amazing comment ever",
+          article_id: 1,
+          author: "butter_bridge",
+          votes: 0,
+          created_at: expect.any(String),
         });
       });
   });
-  it("should respond with status 400 bad request if username does not exist", () => {
+  it("should respond with status 404 bad request if username does not exist", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send({
         username: "coolDude42",
         body: "The most amazing comment ever",
       })
-      .expect(400)
+      .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Key is not present in table");
       });
@@ -182,16 +186,80 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Bad request");
       });
   });
-  it("should respond with 400 bad request if article_id is a number but not present in the database", () => {
+  it("should respond with 404 bad request if article_id is a number but not present in the database", () => {
     return request(app)
       .post("/api/articles/0/comments")
       .send({
         username: "butter_bridge",
         body: "The most amazing comment ever",
       })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  it("should update an article by article_id", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 3 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 103,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  it("should update an article when passed votes are a negative number", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -3 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 97,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  it("should return 404 not found if article_id is a number but is not present in the database", () => {
+    return request(app)
+      .patch("/api/articles/9999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found");
+      });
+  });
+  it("should return 400 if the article_id is not a number", () => {
+    return request(app)
+      .patch("/api/articles/ice-cream")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Key is not present in table");
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should return 400 if the update is badly formatted", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "Ratatouille" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
       });
   });
 });
