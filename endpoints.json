@@ -68,7 +68,11 @@
   }
 },
   "POST /api/articles/:article_id/comments": {
-    "description": "posts a new comment with associated article id",
+    "description": "takes an object with properties 'username' and 'body' and posts a new comment with associated article id",
+    "exampleInput": {
+      "username": "butter_bridge",
+      "body": "The most amazing comment ever"
+    },
     "exampleResponse": {
       "comment_id": 19,
       "body": "The most amazing comment ever",
