@@ -6,6 +6,8 @@ const {
   fetchComments,
   uploadNewComment,
   updateArticle,
+  removeComment,
+  fetchCommentByID,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -81,6 +83,18 @@ const patchArticle = async (req, res, next) => {
   }
 };
 
+const deleteComment = async (req, res, next) => {
+  try {
+    const { comment_id } = req.params;
+    await Promise.all([
+      fetchCommentByID(comment_id),
+      removeComment(comment_id),
+    ]);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   getApi,
   getTopics,
@@ -89,4 +103,5 @@ module.exports = {
   getCommentsByArticleID,
   postComment,
   patchArticle,
+  deleteComment,
 };

@@ -263,3 +263,30 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  it("should delete a comment and return status 204", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(() => {
+        return db
+          .query("select * from comments where comment_id = 1")
+          .then(({ rows }) => {
+            expect(rows.length).toBe(0);
+          });
+      });
+  });
+  it("should return 404 if the comment_id is a number but does not exist", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body: { msg } }) => expect(msg).toBe("Not found"));
+  });
+  it("should return 400 if the comment_id is not in the proper format", () => {
+    return request(app)
+      .delete("/api/comments/Ænima")
+      .expect(400)
+      .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
+  });
+});

@@ -8,6 +8,7 @@ const {
   getCommentsByArticleID,
   postComment,
   patchArticle,
+  deleteComment,
 } = require("./controller");
 app.use(express.json());
 
@@ -18,6 +19,7 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleID);
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", patchArticle);
+app.delete("/api/comments/:comment_id", deleteComment);
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "Not found" });
 });
