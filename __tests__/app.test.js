@@ -290,3 +290,24 @@ describe("DELETE /api/comments/:comment_id", () => {
       .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
   });
 });
+
+describe("GET /api/users", () => {
+  it.only("should return an array of users with properties if there are users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        if (users.length > 0) {
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
+        } else {
+          expect(users.msg).toBe("No users yet");
+        }
+      });
+  });
+});
