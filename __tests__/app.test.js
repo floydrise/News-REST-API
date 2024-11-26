@@ -152,7 +152,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       })
       .expect(201)
       .then(({ body: { newComment } }) => {
-        console.log(newComment);
         expect(newComment).toMatchObject({
           comment_id: expect.any(Number),
           body: "The most amazing comment ever",
@@ -218,6 +217,49 @@ describe("PATCH /api/articles/:article_id", () => {
           votes: 103,
           article_img_url: expect.any(String),
         });
+      });
+  });
+  it("should update an article when passed votes are a negative number", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -3 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 97,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  it("should return 404 not found if article_id is a number but is not present in the database", () => {
+    return request(app)
+      .patch("/api/articles/9999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found");
+      });
+  });
+  it("should return 400 if the article_id is not a number", () => {
+    return request(app)
+      .patch("/api/articles/ice-cream")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should return 400 if the update is badly formatted", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "Ratatouille" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
       });
   });
 });
