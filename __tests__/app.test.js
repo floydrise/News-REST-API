@@ -105,7 +105,7 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
-  it.only("should return status 200 and all comments associated with the article passed as a parameter", () => {
+  it("should return status 200 and all comments associated with the article passed as a parameter", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -132,12 +132,12 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Bad request");
       });
   });
-  it("should return 400 with message Bad request if article_id is a number but is not present in the database", () => {
+  it("should return 404 with message Bad request if article_id is a number but is not present in the database", () => {
     return request(app)
       .get("/api/articles/9999/comments")
-      .expect(400)
+      .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request");
+        expect(msg).toBe("Not found");
       });
   });
 });

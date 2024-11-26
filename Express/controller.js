@@ -43,7 +43,10 @@ const getAllArticles = async (req, res, next) => {
 const getCommentsByArticleID = async (req, res, next) => {
   const { article_id } = req.params;
   try {
-    const comments = await fetchComments(article_id);
+    const [_, comments] = await Promise.all([
+      fetchArticleByID(article_id),
+      fetchComments(article_id),
+    ]);
     res.status(200).send({ comments });
   } catch (err) {
     next(err);
@@ -55,7 +58,6 @@ const postComment = async (req, res, next) => {
     const comment = req.body;
     const { article_id } = req.params;
     const newComment = await uploadNewComment(article_id, comment);
-    console.log(newComment);
     res.status(201).send({ newComment });
   } catch (err) {
     next(err);
