@@ -66,16 +66,43 @@ const uploadNewComment = async (article_id, newComment) => {
   commentValues.push(article_id);
   const { rows } = await db.query(
     `insert into comments (author, body, article_id)
-                                   values ($1, $2, $3)
-                                   returning *`,
+         values ($1, $2, $3)
+         returning *`,
     commentValues,
   );
   return rows[0];
 };
 
 const updateArticle = async (article_id, inc_votes) => {
-    const {rows} = await db.query(`update articles set votes = votes + $1 where article_id = $2 returning *`, [inc_votes, article_id]);
-    return rows[0];
+  const { rows } = await db.query(
+    `update articles
+         set votes = votes + $1
+         where article_id = $2
+         returning *`,
+    [inc_votes, article_id],
+  );
+  return rows[0];
+};
+
+const removeComment = async (comment_id) => {
+  return db.query(
+    `delete
+                     from comments
+                     where comment_id = $1`,
+    [comment_id],
+  );
+};
+
+const fetchCommentByID = async (comment_id) => {
+  const { rows } = await db.query(
+    `select *
+                                   from comments
+                                   where comment_id = $1`,
+    [comment_id],
+  );
+  if (rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Not found" });
+  }
 };
 
 module.exports = {
@@ -85,4 +112,6 @@ module.exports = {
   fetchComments,
   uploadNewComment,
   updateArticle,
+  removeComment,
+  fetchCommentByID,
 };
