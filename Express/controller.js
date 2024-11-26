@@ -26,8 +26,9 @@ const getTopics = async (req, res, next) => {
 
 const getArticleByID = async (req, res, next) => {
   const { article_id } = req.params;
+  const { comment_count } = req.query;
   try {
-    const article = await fetchArticleByID(article_id);
+    const article = await fetchArticleByID(article_id, comment_count);
     res.status(200).send({ article });
   } catch (err) {
     next(err);
