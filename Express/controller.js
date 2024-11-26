@@ -8,6 +8,7 @@ const {
   updateArticle,
   removeComment,
   fetchCommentByID,
+  fetchAllUsers,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -95,6 +96,15 @@ const deleteComment = async (req, res, next) => {
     next(err);
   }
 };
+
+const getUsers = async (req, res, next) => {
+  try {
+    const users = await fetchAllUsers();
+    res.status(200).send({ users });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   getApi,
   getTopics,
@@ -104,4 +114,5 @@ module.exports = {
   postComment,
   patchArticle,
   deleteComment,
+  getUsers,
 };

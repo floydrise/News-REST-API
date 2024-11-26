@@ -87,8 +87,8 @@ const updateArticle = async (article_id, inc_votes) => {
 const removeComment = async (comment_id) => {
   return db.query(
     `delete
-                     from comments
-                     where comment_id = $1`,
+         from comments
+         where comment_id = $1`,
     [comment_id],
   );
 };
@@ -96,13 +96,19 @@ const removeComment = async (comment_id) => {
 const fetchCommentByID = async (comment_id) => {
   const { rows } = await db.query(
     `select *
-                                   from comments
-                                   where comment_id = $1`,
+         from comments
+         where comment_id = $1`,
     [comment_id],
   );
   if (rows.length === 0) {
     return Promise.reject({ status: 404, msg: "Not found" });
   }
+};
+
+const fetchAllUsers = async () => {
+    const {rows} = await db.query(`select * from users`);
+    if (rows.length === 0) return { msg: "No users yet" };
+    return rows;
 };
 
 module.exports = {
@@ -114,4 +120,5 @@ module.exports = {
   updateArticle,
   removeComment,
   fetchCommentByID,
+  fetchAllUsers,
 };
