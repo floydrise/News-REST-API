@@ -496,7 +496,7 @@ describe("GET /api/users/:username", () => {
   });
 });
 
-describe.only("POST /api/articles", () => {
+describe("POST /api/articles", () => {
   it("should return status 200 and post a new article", () => {
     return request(app)
       .post("/api/articles")
