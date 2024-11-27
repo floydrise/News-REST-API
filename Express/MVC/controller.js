@@ -12,6 +12,7 @@ const {
   checkTopicExists,
   fetchUsername,
   uploadNewArticle,
+  updateComment,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -134,7 +135,18 @@ const postNewArticle = async (req, res, next) => {
   try {
     const articleID = await uploadNewArticle(articleValues);
     const article = await fetchArticleByID(articleID);
-    res.status(200).send({article});
+    res.status(200).send({ article });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const patchComment = async (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+  try {
+    const comment = await updateComment(comment_id, inc_votes);
+    res.status(200).send({ comment });
   } catch (err) {
     next(err);
   }
@@ -152,4 +164,5 @@ module.exports = {
   getUsers,
   getUserByUsername,
   postNewArticle,
+  patchComment,
 };
