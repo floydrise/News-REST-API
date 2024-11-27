@@ -7,21 +7,21 @@ const fetchAllTopics = async () => {
   return rows;
 };
 
-const fetchArticleByID = async (article_id,) => {
+const fetchArticleByID = async (article_id) => {
   const query = `SELECT articles.article_id,
-                        articles.author,
-                        articles.title,
-                        articles.topic,
-                        articles.created_at,
-                        articles.votes,
-                        articles.body,
-                        articles.article_img_url,
-                        COUNT(comments.article_id)::INT AS comment_count
-                 FROM articles
-                          JOIN comments
-                               ON comments.article_id = articles.article_id
-                 where articles.article_id = $1
-                 group by articles.article_id`;
+                          articles.author,
+                          articles.title,
+                          articles.topic,
+                          articles.created_at,
+                          articles.votes,
+                          articles.body,
+                          articles.article_img_url,
+                          COUNT(comments.article_id)::INT AS comment_count
+                   FROM articles
+                            JOIN comments
+                                 ON comments.article_id = articles.article_id
+                   where articles.article_id = $1
+                   group by articles.article_id`;
 
   const { rows } = await db.query(query, [article_id]);
   if (rows.length === 0) {
@@ -167,6 +167,19 @@ const fetchAllUsers = async () => {
   return rows;
 };
 
+const fetchUsername = async (username) => {
+  const { rows } = await db.query(
+    `select *
+                                   from users
+                                   where username = $1`,
+    [username],
+  );
+  if (rows.length === 0) {
+      return Promise.reject({status: 404, msg: "No such user found"})
+  }
+  return rows[0];
+};
+
 module.exports = {
   fetchAllTopics,
   fetchArticleByID,
@@ -178,4 +191,5 @@ module.exports = {
   fetchCommentByID,
   fetchAllUsers,
   checkTopicExists,
+  fetchUsername,
 };
