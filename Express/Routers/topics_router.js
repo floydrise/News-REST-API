@@ -1,4 +1,4 @@
-const {getTopics} = require("../controller");
+const {getTopics} = require("../MVC/controller");
 const topicsRouter = require('express').Router()
 
 topicsRouter.get("/", getTopics);

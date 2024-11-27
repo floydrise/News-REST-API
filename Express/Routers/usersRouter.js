@@ -1,4 +1,4 @@
-const {getUsers} = require("../controller");
+const {getUsers} = require("../MVC/controller");
 const usersRouter = require("express").Router()
 
 usersRouter.get("/", getUsers)

@@ -1,4 +1,4 @@
-const {getApi} = require("./controller");
+const {getApi} = require("./MVC/controller");
 const apiRouter = require("express").Router();
 const articlesRouter = require('./Routers/articles_router');
 const topicsRouter = require("./Routers/topics_router")
