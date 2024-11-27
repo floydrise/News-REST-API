@@ -34,6 +34,37 @@
           "comment_count": 6
         }
       ]
+    },
+    "Sort_by query": {
+      "description": "Allows sorting query for the get article endpoint",
+      "allowed sorts": [
+        "article_id",
+        "title",
+        "topic",
+        "author",
+        "body",
+        "created_at",
+        "votes",
+        "article_img_url"
+      ],
+      "response": "array with articles sorted by the passed parameter"
+    },
+    "Order query": {
+      "description": "Allows order query for the get article endpoint",
+      "allowed orders": [
+        "asc",
+        "desc"
+      ],
+      "response": "array with articles ordered by the passed parameter"
+    },
+    "Topic query": {
+      "description": "allows for a topic query",
+      "response": "Array with articles of the passed topic"
+    },
+    "Comment_count query": {
+      "description": "Allows for a comment_count query.",
+      "allowed queries": ["true"],
+      "response": "If set to true, it will return articles with an added property of comment_count with a total of all the comments associated with the article"
     }
   },
   "GET /api/articles/:article_id": {
@@ -110,36 +141,5 @@
         "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
       }
     ]
-  },
-  "GET /api/articles?sort_by=...": {
-    "description": "Allows sorting query for the get article endpoint",
-    "allowed sorts": [
-      "article_id",
-      "title",
-      "topic",
-      "author",
-      "body",
-      "created_at",
-      "votes",
-      "article_img_url"
-    ],
-    "response": "array with articles sorted by the passed parameter"
-  },
-  "GET /api/articles?order=...": {
-    "description": "Allows order query for the get article endpoint",
-    "allowed orders": [
-      "asc",
-      "desc"
-    ],
-    "response": "array with articles ordered by the passed parameter"
-  },
-  "GET /api/articles (topic query)": {
-    "description": "allows for a topic query",
-    "response": "Array with articles of the passed topic"
-  },
-  "GET /api/articles/:article_id?comment_count": {
-    "description": "Allows for a comment_count query.",
-    "allowed queries": ["true"],
-    "response": "If set to true, it will return articles with an added property of comment_count with a total of all the comments associated with the article"
   }
 }
