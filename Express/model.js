@@ -26,7 +26,7 @@ const fetchArticleByID = async (article_id, comment_count) => {
                  where articles.article_id = $1
                  group by articles.article_id`;
   } else if (comment_count && !allowedQueries.includes(comment_count)) {
-      return Promise.reject({status: 400, msg: "Bad request"})
+    return Promise.reject({ status: 400, msg: "Bad request" });
   } else {
     query = `select *
                  from articles
@@ -88,6 +88,16 @@ const fetchArticles = async (sort_by, order, topic) => {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
   const { rows } = await db.query(query, topicArr);
+  return rows;
+};
+
+const checkTopicExists = async (topics) => {
+  const { rows } = await db.query(
+    `select *
+                                   from topics
+                                   where slug = $1`,
+    [topics],
+  );
   if (rows.length === 0) {
     return Promise.reject({ status: 404, msg: "Oops, does not exist yet" });
   }
@@ -176,4 +186,5 @@ module.exports = {
   removeComment,
   fetchCommentByID,
   fetchAllUsers,
+  checkTopicExists,
 };

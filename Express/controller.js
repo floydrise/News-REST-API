@@ -9,6 +9,7 @@ const {
   removeComment,
   fetchCommentByID,
   fetchAllUsers,
+  checkTopicExists,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -36,9 +37,17 @@ const getArticleByID = async (req, res, next) => {
 };
 
 const getAllArticles = async (req, res, next) => {
+  const { sort_by, order, topic } = req.query;
   try {
-    const { sort_by, order, topic } = req.query;
-    const articles = await fetchArticles(sort_by, order, topic);
+    let articles;
+    if (topic === undefined) {
+      articles = await fetchArticles(sort_by, order, topic);
+    } else {
+      [_, articles] = await Promise.all([
+        checkTopicExists(topic),
+        fetchArticles(sort_by, order, topic),
+      ]);
+    }
     res.status(200).send({ articles });
   } catch (err) {
     next(err);
