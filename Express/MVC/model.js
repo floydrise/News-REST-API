@@ -19,8 +19,8 @@ const fetchArticleByID = async (article_id) => {
                           articles.article_img_url,
                           COUNT(comments.article_id)::INT AS comment_count
                    FROM articles
-                           left join comments
-                                 ON comments.article_id = articles.article_id
+                            left join comments
+                                      ON comments.article_id = articles.article_id
                    where articles.article_id = $1
                    group by articles.article_id`;
 
@@ -182,8 +182,18 @@ const fetchUsername = async (username) => {
 };
 
 const uploadNewArticle = async (articleValues) => {
-    const {rows} = await db.query(`insert into articles (author, title, body, topic) values ($1, $2, $3, $4) returning article_id`, articleValues)
+  const { rows } = await db.query(
+    `insert into articles (author, title, body, topic)
+                                   values ($1, $2, $3, $4)
+                                   returning article_id`,
+    articleValues,
+  );
   return _.map(rows, "article_id")[0];
+};
+
+const updateComment = async (comment_id, inc_votes) => {
+    const {rows} = await db.query(`update comments set votes = votes + $1 where comment_id = $2 returning *`, [inc_votes, comment_id]);
+    return rows[0];
 };
 
 module.exports = {
@@ -199,4 +209,5 @@ module.exports = {
   checkTopicExists,
   fetchUsername,
   uploadNewArticle,
+  updateComment,
 };

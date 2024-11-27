@@ -531,7 +531,7 @@ describe("POST /api/articles", () => {
       })
       .expect(404)
       .then(({ body: { msg } }) => {
-          console.log(msg);
+        console.log(msg);
         expect(msg).toBe("Key is not present in table");
       });
   });
@@ -559,6 +559,33 @@ describe("POST /api/articles", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Key is not present in table");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  it("should update the comment' votes ", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 3 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          body: expect.any(String),
+          votes: 19,
+          author: expect.any(String),
+          article_id: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("should return 400 bad request if the request body is not in the appropriate format", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "salmon" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
       });
   });
 });
