@@ -1,5 +1,5 @@
 const format = require("pg-format");
-const db = require("../db/connection");
+const db = require("../../db/connection");
 
 const fetchAllTopics = async () => {
   const { rows } = await db.query(`select *
@@ -7,11 +7,8 @@ const fetchAllTopics = async () => {
   return rows;
 };
 
-const fetchArticleByID = async (article_id, comment_count) => {
-  let query;
-  const allowedQueries = ["true"];
-  if (comment_count && allowedQueries.includes(comment_count)) {
-    query = `SELECT articles.article_id,
+const fetchArticleByID = async (article_id,) => {
+  const query = `SELECT articles.article_id,
                         articles.author,
                         articles.title,
                         articles.topic,
@@ -25,13 +22,7 @@ const fetchArticleByID = async (article_id, comment_count) => {
                                ON comments.article_id = articles.article_id
                  where articles.article_id = $1
                  group by articles.article_id`;
-  } else if (comment_count && !allowedQueries.includes(comment_count)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
-  } else {
-    query = `select *
-                 from articles
-                 where article_id = $1`;
-  }
+
   const { rows } = await db.query(query, [article_id]);
   if (rows.length === 0) {
     return Promise.reject({ status: 404, msg: "Not found" });
@@ -94,8 +85,8 @@ const fetchArticles = async (sort_by, order, topic) => {
 const checkTopicExists = async (topics) => {
   const { rows } = await db.query(
     `select *
-                                   from topics
-                                   where slug = $1`,
+         from topics
+         where slug = $1`,
     [topics],
   );
   if (rows.length === 0) {

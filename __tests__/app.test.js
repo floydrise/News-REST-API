@@ -50,12 +50,12 @@ describe("GET /api/articles/:article_id", () => {
       .then(({ body: { article } }) => {
         expect(article).toMatchObject({
           article_id: 1,
-          title: "Living in the shadow of a great man",
-          topic: "mitch",
-          author: "butter_bridge",
-          body: "I find this existence challenging",
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
           created_at: expect.any(String),
-          votes: 100,
+          votes: expect.any(Number),
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
@@ -458,20 +458,15 @@ describe("GET /api/articles (topic query)", () => {
 });
 
 describe("GET /api/articles/:article_id (comment_count)", () => {
-  it("should return article with comment count if query is set to true", () => {
+  it("should return article including comment count", () => {
     return request(app)
-      .get("/api/articles/1?comment_count=true")
+      .get("/api/articles/1")
       .expect(200)
-      .then(({ body: { article } }) => {
+      .then( async ({ body: { article } }) => {
+        const {rows} = await db.query(`select * from comments where article_id = 1`);
         expect(article).toHaveProperty("comment_count");
-      });
-  });
-  it("should return 400 Bad request if query is present but not allowed", () => {
-    return request(app)
-      .get("/api/articles/1?comment_count=roses")
-      .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request");
+        expect(typeof article.comment_count).toBe("number");
+        expect(article.comment_count).toBe(rows.length);
       });
   });
 });

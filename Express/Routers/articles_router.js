@@ -1,4 +1,4 @@
-const { getAllArticles, getArticleByID, patchArticle, getCommentsByArticleID, postComment} = require("../controller");
+const { getAllArticles, getArticleByID, patchArticle, getCommentsByArticleID, postComment} = require("../MVC/controller");
 const articlesRouter = require("express").Router();
 
 articlesRouter.get("/", getAllArticles);
