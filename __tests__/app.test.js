@@ -589,3 +589,22 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("GET /api/articles (pagination)", () => {
+  it("should accept a limit query and only display a limited number of articles, defaults to 10", () => {
+    return request(app)
+      .get("/api/articles?limit")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toHaveLength(10);
+      });
+  });
+  it("should accept a limit query and only display a limited number of articles, custom limit", () => {
+    return request(app)
+      .get("/api/articles?limit=5")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toHaveLength(5);
+      });
+  });
+});

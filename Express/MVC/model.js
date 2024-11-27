@@ -31,7 +31,7 @@ const fetchArticleByID = async (article_id) => {
   return rows[0];
 };
 
-const fetchArticles = async (sort_by, order, topic) => {
+const fetchArticles = async (sort_by, order, topic, limit) => {
   const allowedSorts = [
     "article_id",
     "title",
@@ -79,6 +79,13 @@ const fetchArticles = async (sort_by, order, topic) => {
   } else {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
+
+  if (!limit) {
+    query += ` limit 10`;
+  } else {
+      query += ` limit ${limit}`
+  }
+
   const { rows } = await db.query(query, topicArr);
   return rows;
 };
@@ -184,16 +191,22 @@ const fetchUsername = async (username) => {
 const uploadNewArticle = async (articleValues) => {
   const { rows } = await db.query(
     `insert into articles (author, title, body, topic)
-                                   values ($1, $2, $3, $4)
-                                   returning article_id`,
+         values ($1, $2, $3, $4)
+         returning article_id`,
     articleValues,
   );
   return _.map(rows, "article_id")[0];
 };
 
 const updateComment = async (comment_id, inc_votes) => {
-    const {rows} = await db.query(`update comments set votes = votes + $1 where comment_id = $2 returning *`, [inc_votes, comment_id]);
-    return rows[0];
+  const { rows } = await db.query(
+    `update comments
+         set votes = votes + $1
+         where comment_id = $2
+         returning *`,
+    [inc_votes, comment_id],
+  );
+  return rows[0];
 };
 
 module.exports = {

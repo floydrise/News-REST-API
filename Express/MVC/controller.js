@@ -39,15 +39,15 @@ const getArticleByID = async (req, res, next) => {
 };
 
 const getAllArticles = async (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
+  const { sort_by, order, topic, limit } = req.query;
   try {
     let articles;
     if (topic === undefined) {
-      articles = await fetchArticles(sort_by, order, topic);
+      articles = await fetchArticles(sort_by, order, topic, limit);
     } else {
       [_, articles] = await Promise.all([
         checkTopicExists(topic),
-        fetchArticles(sort_by, order, topic),
+        fetchArticles(sort_by, order, topic, limit),
       ]);
     }
     res.status(200).send({ articles });
