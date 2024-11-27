@@ -1,5 +1,6 @@
 const format = require("pg-format");
 const db = require("../../db/connection");
+const _ = require("lodash");
 
 const fetchAllTopics = async () => {
   const { rows } = await db.query(`select *
@@ -18,7 +19,7 @@ const fetchArticleByID = async (article_id) => {
                           articles.article_img_url,
                           COUNT(comments.article_id)::INT AS comment_count
                    FROM articles
-                            JOIN comments
+                           left join comments
                                  ON comments.article_id = articles.article_id
                    where articles.article_id = $1
                    group by articles.article_id`;
@@ -170,14 +171,19 @@ const fetchAllUsers = async () => {
 const fetchUsername = async (username) => {
   const { rows } = await db.query(
     `select *
-                                   from users
-                                   where username = $1`,
+         from users
+         where username = $1`,
     [username],
   );
   if (rows.length === 0) {
-      return Promise.reject({status: 404, msg: "No such user found"})
+    return Promise.reject({ status: 404, msg: "No such user found" });
   }
   return rows[0];
+};
+
+const uploadNewArticle = async (articleValues) => {
+    const {rows} = await db.query(`insert into articles (author, title, body, topic) values ($1, $2, $3, $4) returning article_id`, articleValues)
+  return _.map(rows, "article_id")[0];
 };
 
 module.exports = {
@@ -192,4 +198,5 @@ module.exports = {
   fetchAllUsers,
   checkTopicExists,
   fetchUsername,
+  uploadNewArticle,
 };

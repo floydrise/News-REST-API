@@ -462,8 +462,10 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
-      .then( async ({ body: { article } }) => {
-        const {rows} = await db.query(`select * from comments where article_id = 1`);
+      .then(async ({ body: { article } }) => {
+        const { rows } = await db.query(`select *
+                                               from comments
+                                               where article_id = 1`);
         expect(article).toHaveProperty("comment_count");
         expect(typeof article.comment_count).toBe("number");
         expect(article.comment_count).toBe(rows.length);
@@ -471,19 +473,92 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
   });
 });
 
-describe('GET /api/users/:username', () => {
-    it('should return a user with the specified username', () => {
-        return request(app).get("/api/users/butter_bridge").expect(200).then(({body: {user}}) => {
-            expect(user).toMatchObject(  {
-                username: 'butter_bridge',
-                name: expect.any(String),
-                avatar_url: expect.any(String)
-            })
-        })
-    });
-    it('should return status 404 with a message if no such user exists', () => {
-        return request(app).get("/api/users/TonySoprano").expect(404).then(({body: {msg}}) => {
-            expect(msg).toBe("No such user found");
-        })
-    });
+describe("GET /api/users/:username", () => {
+  it("should return a user with the specified username", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        });
+      });
+  });
+  it("should return status 404 with a message if no such user exists", () => {
+    return request(app)
+      .get("/api/users/TonySoprano")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No such user found");
+      });
+  });
+});
+
+describe.only("POST /api/articles", () => {
+  it("should return status 200 and post a new article", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "Greatest article in the world",
+        body: "Breaking news, this is the greatest article in the world",
+        topic: "mitch",
+      })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "Greatest article in the world",
+          body: "Breaking news, this is the greatest article in the world",
+          topic: "mitch",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+  it("should return status 404 and a message if the username does not exist in the system", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "stefan",
+        title: "Greatest article in the world",
+        body: "Breaking news, this is the greatest article in the world",
+        topic: "mitch",
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+          console.log(msg);
+        expect(msg).toBe("Key is not present in table");
+      });
+  });
+  it("should return status 400 bad request if a parameter is not supplied in the request body", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Greatest article in the world",
+        topic: "mitch",
+      })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should return status 404 and a message if a topic does not exist", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "stefan",
+        title: "Greatest article in the world",
+        body: "Breaking news, this is the greatest article in the world",
+        topic: "oogabooga",
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Key is not present in table");
+      });
+  });
 });
