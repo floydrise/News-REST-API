@@ -470,3 +470,20 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
       });
   });
 });
+
+describe('GET /api/users/:username', () => {
+    it('should return a user with the specified username', () => {
+        return request(app).get("/api/users/butter_bridge").expect(200).then(({body: {user}}) => {
+            expect(user).toMatchObject(  {
+                username: 'butter_bridge',
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+            })
+        })
+    });
+    it('should return status 404 with a message if no such user exists', () => {
+        return request(app).get("/api/users/TonySoprano").expect(404).then(({body: {msg}}) => {
+            expect(msg).toBe("No such user found");
+        })
+    });
+});

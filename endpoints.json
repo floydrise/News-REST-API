@@ -60,11 +60,6 @@
     "Topic query": {
       "description": "allows for a topic query",
       "response": "Array with articles of the passed topic"
-    },
-    "Comment_count query": {
-      "description": "Allows for a comment_count query.",
-      "allowed queries": ["true"],
-      "response": "If set to true, it will return articles with an added property of comment_count with a total of all the comments associated with the article"
     }
   },
   "GET /api/articles/:article_id": {
@@ -79,7 +74,8 @@
         "body": "I find this existence challenging",
         "created_at": 123123123123,
         "votes": 100,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 6
       }
     }
   },
@@ -141,5 +137,14 @@
         "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
       }
     ]
+  },
+  "GET /api/users/:username": {
+    "description": "fetches a user by it's username.",
+    "queries": [],
+    "exampleResponse": {
+      "username": "butter_bridge",
+      "name": "jonny",
+      "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+    }
   }
 }

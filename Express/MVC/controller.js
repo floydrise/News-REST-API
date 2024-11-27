@@ -10,6 +10,7 @@ const {
   fetchCommentByID,
   fetchAllUsers,
   checkTopicExists,
+  fetchUsername,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -115,6 +116,17 @@ const getUsers = async (req, res, next) => {
     next(err);
   }
 };
+
+const getUserByUsername = async (req, res, next) => {
+  const { username } = req.params;
+  try {
+    const user = await fetchUsername(username);
+    res.status(200).send({ user });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getApi,
   getTopics,
@@ -125,4 +137,5 @@ module.exports = {
   patchArticle,
   deleteComment,
   getUsers,
+  getUserByUsername,
 };
