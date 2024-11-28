@@ -249,6 +249,14 @@ const updateComment = async (comment_id, inc_votes) => {
   return rows[0];
 };
 
+const createNewTopic = async (slug, description) => {
+  if (!slug || !description) {
+    return Promise.reject({status: 400, msg: "Bad request"});
+  }
+  const { rows } = await db.query(`insert into topics (slug, description) values ($1, $2) returning *`, [slug, description])
+  return rows[0];
+};
+
 module.exports = {
   fetchAllTopics,
   fetchArticleByID,
@@ -263,4 +271,5 @@ module.exports = {
   fetchUsername,
   uploadNewArticle,
   updateComment,
+  createNewTopic
 };

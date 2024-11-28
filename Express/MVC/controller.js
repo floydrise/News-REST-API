@@ -13,6 +13,7 @@ const {
   fetchUsername,
   uploadNewArticle,
   updateComment,
+  createNewTopic,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -154,6 +155,15 @@ const patchComment = async (req, res, next) => {
   }
 };
 
+const postTopic = async (req, res, next) => {
+  const { slug, description } = req.body;
+  try {
+    const topic = await createNewTopic(slug, description);
+    res.status(200).send({ topic });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   getApi,
   getTopics,
@@ -167,4 +177,5 @@ module.exports = {
   getUserByUsername,
   postNewArticle,
   patchComment,
+  postTopic,
 };
