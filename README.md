@@ -5,7 +5,8 @@
 **Info**
 
 A REST API with the purpose of accessing application data.
-The intention here is to mimic the building of a real world backend service (such as Reddit) which should provide this information to the front end architecture. 
+The intention here is to mimic the building of a real world backend service (such as Reddit) which should provide this information to the front end architecture.
+The data will be displayed in JSON format.
 
 ---
 

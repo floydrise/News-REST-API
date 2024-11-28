@@ -642,12 +642,10 @@ describe("GET /api/articles (pagination)", () => {
       .expect(400)
       .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
   });
-  it.skip("should return an error if the limit is bigger than the available articles", () => {
+  it("should return an error if the limit is bigger than the available articles", () => {
     return request(app)
       .get("/api/articles?limit=15")
       .expect(400)
-      .then(({ body: { articles } }) => {
-        console.log(articles);
-      });
+      .then(({ body: { articles } }) => {});
   });
 });

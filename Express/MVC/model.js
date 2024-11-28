@@ -86,6 +86,29 @@ const fetchArticles = async (sort_by, order, topic, limit = 10, p = 1) => {
   if (isNaN(parsedLimit) || isNaN(parsedPage)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
+
+  let countQuery = `SELECT COUNT(article_id)::INT AS total
+                      FROM articles`;
+  const countValues = [];
+  let topics;
+  if (topic !== undefined) {
+    topics = await checkTopicExists(topic);
+    countQuery += ` WHERE topic=$1`;
+    countValues.push(topic);
+  }
+  const { rows: countRows } = await db.query(countQuery, countValues);
+  const totalArticles = countRows[0].total;
+
+  if (topics !== undefined) {
+    if (parsedLimit > totalArticles && topics.length === 0) {
+      return Promise.reject({ status: 400, msg: "Bad request" });
+    }
+  } else {
+    if (parsedLimit > totalArticles) {
+      return Promise.reject({ status: 400, msg: "Bad request" });
+    }
+  }
+
   query += ` limit ${limit}`;
   const offset = limit * (p - 1);
   query += ` offset ${offset}`;
