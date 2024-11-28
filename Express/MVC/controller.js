@@ -50,7 +50,8 @@ const getAllArticles = async (req, res, next) => {
         fetchArticles(sort_by, order, topic, limit),
       ]);
     }
-    res.status(200).send({ articles });
+    const total_count = articles.length;
+    res.status(200).send({ articles, total_count });
   } catch (err) {
     next(err);
   }

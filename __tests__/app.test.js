@@ -594,16 +594,16 @@ describe("GET /api/articles (pagination)", () => {
     return request(app)
       .get("/api/articles?limit=10")
       .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toHaveLength(10);
+      .then(({ body: { articles, total_count } }) => {
+        expect(total_count).toBe(10);
       });
   });
   it("should accept a limit query and only display a limited number of articles, custom limit", () => {
     return request(app)
       .get("/api/articles?limit=5")
       .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toHaveLength(5);
+      .then(({ body: { articles, total_count } }) => {
+        expect(total_count).toBe(5);
       });
   });
   it("should accept a page query (p) and display articles for that page based on the limit, defaults to 1", () => {
@@ -619,9 +619,10 @@ describe("GET /api/articles (pagination)", () => {
     return request(app)
       .get("/api/articles?sort_by=article_id&order=asc&limit=3&p=3")
       .expect(200)
-      .then(({ body: { articles } }) => {
+      .then(({ body: { articles, total_count } }) => {
         expect(articles).toHaveLength(3);
         expect(articles[articles.length - 1].article_id).toBe(9);
+        expect(total_count).toBe(3);
       });
   });
   it("should return 400 Bad request if limit query is not a number", () => {
@@ -646,6 +647,6 @@ describe("GET /api/articles (pagination)", () => {
     return request(app)
       .get("/api/articles?limit=15")
       .expect(400)
-      .then(({ body: { articles } }) => {});
+      .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
   });
 });
