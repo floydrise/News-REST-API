@@ -39,6 +39,15 @@ The data will be displayed in JSON format.
 - pg-format
 - node-postgres
 
+**Dev dependencies**
+
+If you want to run the tests, you'll need these dependencies:
+
+- Jest [Instructions](https://www.npmjs.com/package/jest)
+- Jest-Sorted [Instrunctions](https://www.npmjs.com/package/jest-sorted)
+- Supertest [Instructions](https://www.npmjs.com/package/supertest)
+- Husky [Instructions](https://typicode.github.io/husky/)
+
 --- 
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)

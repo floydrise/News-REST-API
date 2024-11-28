@@ -89,6 +89,7 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "should get all comments for an article",
+    "queries": ["limit", "p"],
     "exampleResponse": {
       "comments": [
         {
@@ -100,6 +101,16 @@
           "article_id": 1
         }
       ]
+    },
+    "Limit query": {
+      "description": "Allows a limit for how many comments to show to be set",
+      "response": "Will return an array with comment objects the length of the chosen limit.",
+      "Errors": "Will return an error if the limit is below 1 and over 100 or if the limit is not a number"
+    },
+    "P query": {
+      "description": "Will add the choice to sort through pages",
+      "response": "Returns items according to the limit, if there are more items, they can be accessed on the next page. If the page is set to more than 1 but there are no comments, an empty array will be returned",
+      "Errors": "Throws an error if the page query is not a number"
     }
   },
   "POST /api/articles/:article_id/comments": {

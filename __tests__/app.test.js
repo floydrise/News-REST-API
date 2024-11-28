@@ -650,3 +650,83 @@ describe("GET /api/articles (pagination)", () => {
       .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
   });
 });
+
+describe("GET /api/articles/:article_id/comments (pagination)", () => {
+  it("should return the comments limited to 10 (default)", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=10")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(10);
+      });
+  });
+  it("should return comments limited to 5", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(5);
+      });
+  });
+  it("should divide comments in pages", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&p=2")
+      .expect(200)
+      .then(async ({ body: { comments } }) => {
+        const { rows } = await db.query(`select comments.comment_id,
+                                                      comments.votes,
+                                                      comments.created_at,
+                                                      comments.author,
+                                                      comments.body,
+                                                      comments.article_id
+                                               from comments
+                                                        join articles on articles.article_id = comments.article_id
+                                               where articles.article_id = 1
+                                               order by comments.created_at asc
+                                               limit 5`);
+        const parsedDateFirstPage =
+          Date.parse(rows[rows.length - 1].created_at) / 1000;
+        const parsedDateSecondPage = Date.parse(comments[0].created_at) / 1000;
+        expect(comments).toHaveLength(5);
+        // assert the last date from the first page is less than the first date from the second page
+        expect(parsedDateSecondPage).toBeGreaterThan(parsedDateFirstPage);
+      });
+  });
+  it("should return status 400 if limit is not a number", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=ten")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should return status 400 if page is not a number", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=ten")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should return 400 if the limit is set below 1", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=0")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  it("should return 400 if limit is over 100", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=101")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+    it('should return an empty array if the page is set to more than one and there are no articles', () => {
+        return request(app).get('/api/articles/1/comments?p=100').expect(200).then(({body: {comments}}) => {
+            expect(comments).toHaveLength(0);
+        })
+    });
+});
