@@ -59,10 +59,11 @@ const getAllArticles = async (req, res, next) => {
 
 const getCommentsByArticleID = async (req, res, next) => {
   const { article_id } = req.params;
+  const { limit, p } = req.query;
   try {
     const [_, comments] = await Promise.all([
       fetchArticleByID(article_id),
-      fetchComments(article_id),
+      fetchComments(article_id, limit, p),
     ]);
     res.status(200).send({ comments });
   } catch (err) {

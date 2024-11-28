@@ -109,9 +109,8 @@ const fetchArticles = async (sort_by, order, topic, limit = 10, p = 1) => {
     }
   }
 
-  query += ` limit ${limit}`;
   const offset = limit * (p - 1);
-  query += ` offset ${offset}`;
+  query += ` limit ${limit} offset ${offset}`;
 
   const { rows } = await db.query(query, queryValues);
   return rows;
@@ -130,22 +129,36 @@ const checkTopicExists = async (topics) => {
   return rows;
 };
 
-const fetchComments = async (article_id) => {
-  const { rows } = await db.query(
-    `select comments.comment_id,
-                comments.votes,
-                comments.created_at,
-                comments.author,
-                comments.body,
-                comments.article_id
-         from comments
-                  join articles on articles.article_id = comments.article_id
-         where articles.article_id = $1
-         group by comment_id
-         order by comments.created_at asc`,
-    [article_id],
-  );
-  if (rows.length === 0) {
+const fetchComments = async (article_id, limit = 10, p = 1) => {
+  let query = `select comments.comment_id,
+                        comments.votes,
+                        comments.created_at,
+                        comments.author,
+                        comments.body,
+                        comments.article_id
+                 from comments
+                          join articles on articles.article_id = comments.article_id
+                 where articles.article_id = $1
+                 order by comments.created_at asc`;
+
+  const parsedLimit = Number(limit);
+  const parsePage = Number(p);
+
+  if (isNaN(parsedLimit) || isNaN(parsePage)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  if (parsedLimit < 1 || parsedLimit > 100) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  const offset = limit * (p - 1);
+  query += ` limit ${limit} offset ${offset}`;
+
+  const { rows } = await db.query(query, [article_id]);
+  if (parsePage > 1 && rows.length === 0) {
+    return [];
+  } else if (rows.length === 0) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
   return rows;
