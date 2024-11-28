@@ -89,7 +89,10 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "should get all comments for an article",
-    "queries": ["limit", "p"],
+    "queries": [
+      "limit",
+      "p"
+    ],
     "exampleResponse": {
       "comments": [
         {
@@ -165,5 +168,17 @@
       "name": "jonny",
       "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
     }
+  },
+  "POST /api/topics": {
+    "description": "Takes an object with properties 'slug' and 'description' and posts a new topic. Responds with the posted topic",
+    "Example input": {
+      "slug": "guitars",
+      "description": "Topic about guitars"
+    },
+    "Example response": {
+      "slug": "guitars",
+      "description": "Topic about guitars"
+    },
+    "Errors": "Throws an error if the request body is not in the proper format, eg. lacks one of the properties"
   }
 }

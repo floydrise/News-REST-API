@@ -724,9 +724,35 @@ describe("GET /api/articles/:article_id/comments (pagination)", () => {
         expect(msg).toBe("Bad request");
       });
   });
-    it('should return an empty array if the page is set to more than one and there are no articles', () => {
-        return request(app).get('/api/articles/1/comments?p=100').expect(200).then(({body: {comments}}) => {
-            expect(comments).toHaveLength(0);
+  it("should return an empty array if the page is set to more than one and there are no articles", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=100")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(0);
+      });
+  });
+});
+
+describe("POST /api/topics", () => {
+  it("should insert a new topic and return the body", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({
+        slug: "guitars",
+        description: "Topic about guitars",
+      })
+      .expect(200)
+      .then(({ body: { topic } }) => {
+        expect(topic).toMatchObject({
+          slug: "guitars",
+          description: "Topic about guitars",
+        });
+      });
+  });
+    it('should return 400 if a value is not supplied in the request', () => {
+        return request(app).post("/api/topics").send({}).expect(400).then(({body: {msg}}) => {
+            expect(msg).toBe("Bad request");
         })
     });
 });
