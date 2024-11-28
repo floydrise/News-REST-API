@@ -60,6 +60,14 @@
     "Topic query": {
       "description": "allows for a topic query",
       "response": "Array with articles of the passed topic"
+    },
+    "Limit query": {
+      "description": "Allows for a limit query to be added. Defaults to 10",
+      "response": "Will only display as many items as the limit is set to. Will return an error if the limit is higher than the available data"
+    },
+    "Page (p) query": {
+      "description": "Allows pagination. Defaults to 1",
+      "response": "Will display the default amount (limit) of articles in a page. Next page will display the next number of articles. If a page with no articles is chosen, an empty array will be returned"
     }
   },
   "GET /api/articles/:article_id": {

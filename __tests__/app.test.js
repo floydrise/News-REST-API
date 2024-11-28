@@ -531,7 +531,6 @@ describe("POST /api/articles", () => {
       })
       .expect(404)
       .then(({ body: { msg } }) => {
-        console.log(msg);
         expect(msg).toBe("Key is not present in table");
       });
   });
@@ -591,20 +590,63 @@ describe("PATCH /api/comments/:comment_id", () => {
 });
 
 describe("GET /api/articles (pagination)", () => {
-  it("should accept a limit query and only display a limited number of articles, defaults to 10", () => {
+  it("should accept a limit query and only display a limited number of articles", () => {
     return request(app)
-      .get("/api/articles?limit")
+      .get("/api/articles?limit=10")
       .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toHaveLength(10);
+      .then(({ body: { articles, total_count } }) => {
+        expect(total_count).toBe(10);
       });
   });
   it("should accept a limit query and only display a limited number of articles, custom limit", () => {
     return request(app)
       .get("/api/articles?limit=5")
       .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toHaveLength(5);
+      .then(({ body: { articles, total_count } }) => {
+        expect(total_count).toBe(5);
       });
+  });
+  it("should accept a page query (p) and display articles for that page based on the limit, defaults to 1", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=asc&p=1")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toHaveLength(10);
+        expect(articles[articles.length - 1].article_id).toBe(10);
+      });
+  });
+  it("should return second page if query (p) is set to three", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=asc&limit=3&p=3")
+      .expect(200)
+      .then(({ body: { articles, total_count } }) => {
+        expect(articles).toHaveLength(3);
+        expect(articles[articles.length - 1].article_id).toBe(9);
+        expect(total_count).toBe(3);
+      });
+  });
+  it("should return 400 Bad request if limit query is not a number", () => {
+    return request(app)
+      .get("/api/articles?limit=ten")
+      .expect(400)
+      .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
+  });
+  it("should return 400 Bad request if page query is not a number", () => {
+    return request(app)
+      .get("/api/articles?p=two")
+      .expect(400)
+      .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
+  });
+  it("should return 400 Bad request if both page and limit are not numbers", () => {
+    return request(app)
+      .get("/api/articles?limit=four&p=two")
+      .expect(400)
+      .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
+  });
+  it("should return an error if the limit is bigger than the available articles", () => {
+    return request(app)
+      .get("/api/articles?limit=15")
+      .expect(400)
+      .then(({ body: { msg } }) => expect(msg).toBe("Bad request"));
   });
 });

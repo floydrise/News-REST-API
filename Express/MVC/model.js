@@ -31,7 +31,7 @@ const fetchArticleByID = async (article_id) => {
   return rows[0];
 };
 
-const fetchArticles = async (sort_by, order, topic, limit) => {
+const fetchArticles = async (sort_by, order, topic, limit = 10, p = 1) => {
   const allowedSorts = [
     "article_id",
     "title",
@@ -55,10 +55,10 @@ const fetchArticles = async (sort_by, order, topic, limit) => {
                           LEFT JOIN comments
                                     ON comments.article_id = articles.article_id
     `;
-  const topicArr = [];
+  const queryValues = [];
   if (topic !== undefined) {
     query += ` where articles.topic=$1`;
-    topicArr.push(topic);
+    queryValues.push(topic);
   }
 
   query += ` group by articles.article_id`;
@@ -80,13 +80,40 @@ const fetchArticles = async (sort_by, order, topic, limit) => {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  if (!limit) {
-    query += ` limit 10`;
-  } else {
-      query += ` limit ${limit}`
+  const parsedLimit = Number(limit);
+  const parsedPage = Number(p);
+
+  if (isNaN(parsedLimit) || isNaN(parsedPage)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  const { rows } = await db.query(query, topicArr);
+  let countQuery = `SELECT COUNT(article_id)::INT AS total
+                      FROM articles`;
+  const countValues = [];
+  let topics;
+  if (topic !== undefined) {
+    topics = await checkTopicExists(topic);
+    countQuery += ` WHERE topic=$1`;
+    countValues.push(topic);
+  }
+  const { rows: countRows } = await db.query(countQuery, countValues);
+  const totalArticles = countRows[0].total;
+
+  if (topics !== undefined) {
+    if (parsedLimit > totalArticles && topics.length === 0) {
+      return Promise.reject({ status: 400, msg: "Bad request" });
+    }
+  } else {
+    if (parsedLimit > totalArticles) {
+      return Promise.reject({ status: 400, msg: "Bad request" });
+    }
+  }
+
+  query += ` limit ${limit}`;
+  const offset = limit * (p - 1);
+  query += ` offset ${offset}`;
+
+  const { rows } = await db.query(query, queryValues);
   return rows;
 };
 
