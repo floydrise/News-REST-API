@@ -251,10 +251,30 @@ const updateComment = async (comment_id, inc_votes) => {
 
 const createNewTopic = async (slug, description) => {
   if (!slug || !description) {
-    return Promise.reject({status: 400, msg: "Bad request"});
+    return Promise.reject({ status: 400, msg: "Bad request" });
   }
-  const { rows } = await db.query(`insert into topics (slug, description) values ($1, $2) returning *`, [slug, description])
+  const { rows } = await db.query(
+    `insert into topics (slug, description)
+                                   values ($1, $2)
+                                   returning *`,
+    [slug, description],
+  );
   return rows[0];
+};
+
+const removeArticle = async (article_id) => {
+  await db.query(
+    `delete
+                    from comments
+                    where article_id = $1`,
+    [article_id],
+  );
+  return await db.query(
+    `delete
+                           from articles
+                           where article_id = $1`,
+    [article_id],
+  );
 };
 
 module.exports = {
@@ -271,5 +291,6 @@ module.exports = {
   fetchUsername,
   uploadNewArticle,
   updateComment,
-  createNewTopic
+  createNewTopic,
+  removeArticle,
 };

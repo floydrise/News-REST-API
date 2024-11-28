@@ -14,6 +14,7 @@ const {
   uploadNewArticle,
   updateComment,
   createNewTopic,
+  removeArticle,
 } = require("./model");
 
 const getApi = (req, res, next) => {
@@ -164,6 +165,20 @@ const postTopic = async (req, res, next) => {
     next(err);
   }
 };
+
+const deleteArticle = async (req, res, next) => {
+  const { article_id } = req.params;
+  try {
+    await Promise.all([
+      fetchArticleByID(article_id),
+      removeArticle(article_id),
+    ]);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getApi,
   getTopics,
@@ -178,4 +193,5 @@ module.exports = {
   postNewArticle,
   patchComment,
   postTopic,
+  deleteArticle,
 };

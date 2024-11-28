@@ -750,9 +750,24 @@ describe("POST /api/topics", () => {
         });
       });
   });
-    it('should return 400 if a value is not supplied in the request', () => {
-        return request(app).post("/api/topics").send({}).expect(400).then(({body: {msg}}) => {
-            expect(msg).toBe("Bad request");
-        })
+  it("should return 400 if a value is not supplied in the request", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("DELETE /api/articles/:article_id", () => {
+  it("should return 201, no content and delete the article and the comments associated with it ", () => {
+    return request(app).delete("/api/articles/1").expect(204);
+  });
+    it('should return an error if the article does not exist', () => {
+        return request(app).delete('/api/articles/43').expect(404).then(({body: {msg}}) => {
+            expect(msg).toBe("Not found");
+        });
     });
 });
