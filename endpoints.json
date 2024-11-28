@@ -180,5 +180,9 @@
       "description": "Topic about guitars"
     },
     "Errors": "Throws an error if the request body is not in the proper format, eg. lacks one of the properties"
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "Deletes an article and the associated comments by the article id",
+    "response": "Returns status 204 and no content"
   }
 }
