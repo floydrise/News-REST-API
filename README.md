@@ -9,7 +9,7 @@ The intention here is to mimic the building of a real world backend service (suc
 
 ---
 
-**Hosted version:** [newsApi]()
+**Hosted version:** [News API](https://news-api-40x5.onrender.com/api)
 
 ---
 
@@ -37,7 +37,6 @@ The intention here is to mimic the building of a real world backend service (suc
 - dotenv
 - pg-format
 - node-postgres
-- prettier
 
 --- 
 
