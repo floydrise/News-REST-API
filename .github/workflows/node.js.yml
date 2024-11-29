@@ -47,10 +47,25 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm run setup-dbs
-    - run: npm run seed
-    - run: npm test
+    - name: Set up databases
+      run: npm run setup-dbs
       env:
-        POSTGRES_HOST: postgres
-        POSTGRES_PORT: 5432
-        DATABASE_NAME: nc_news_test
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          DATABASE_NAME: nc_news_test
+
+      # Seed the database
+    - name: Seed database
+      run: npm run seed
+      env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          DATABASE_NAME: nc_news_test
+
+      # Run tests
+    - name: Run tests
+      run: npm test
+      env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
+          DATABASE_NAME: nc_news_test
