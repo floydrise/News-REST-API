@@ -41,6 +41,7 @@ const fetchArticles = async (sort_by, order, topic, limit = 10, p = 1) => {
     "created_at",
     "votes",
     "article_img_url",
+    "comment_count",
   ];
   const allowedOrders = ["asc", "desc"];
   let query = `SELECT articles.article_id,
