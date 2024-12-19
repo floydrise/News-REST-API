@@ -121,7 +121,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
           });
         });
-        expect(comments).toBeSortedBy("created_at", { descending: false });
+        expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
   it("should return 400 with message Bad request if article_id is not a number", () => {

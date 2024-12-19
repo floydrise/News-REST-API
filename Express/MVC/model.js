@@ -140,7 +140,7 @@ const fetchComments = async (article_id, limit = 10, p = 1) => {
                  from comments
                           join articles on articles.article_id = comments.article_id
                  where articles.article_id = $1
-                 order by comments.created_at asc`;
+                 order by comments.created_at desc`;
 
   const parsedLimit = Number(limit);
   const parsePage = Number(p);
